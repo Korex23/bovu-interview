@@ -22,13 +22,12 @@ export interface Contact {
   avatar: string;
 }
 
-export interface CardData {
+export interface Card {
   id: string;
+  image: string;
   number: string;
   holder: string;
   expiry: string;
-  type: "visa" | "mastercard";
-  color: string; // gradient class
 }
 
 export interface ChartData {

@@ -1,30 +1,32 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   Home,
-  Grid,
+  LayoutGrid,
   Wallet,
   Settings,
-  MessageSquare,
-  Briefcase,
   Gift,
   HelpCircle,
+  BadgePercent,
+  Calendar,
+  Calculator,
 } from "lucide-react";
 
 type SidebarProps = {
   scrollContainerRef?: React.RefObject<HTMLElement | null>;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ scrollContainerRef }) => {
+const Sidebar = ({ scrollContainerRef }: SidebarProps) => {
   const [active, setActive] = useState("home");
   const [hidden, setHidden] = useState(false);
   const lastY = useRef(0);
 
   const menuItems = [
     { id: "home", icon: Home },
-    { id: "apps", icon: Grid },
+    { id: "apps", icon: LayoutGrid },
     { id: "wallet", icon: Wallet },
-    { id: "portfolio", icon: Briefcase },
-    { id: "messages", icon: MessageSquare },
+    { id: "portfolio", icon: BadgePercent },
+    { id: "calc", icon: Calculator },
+    { id: "messages", icon: Calendar },
     { id: "gifts", icon: Gift },
     { id: "settings", icon: Settings },
   ];

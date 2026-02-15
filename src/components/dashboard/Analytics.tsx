@@ -1,4 +1,3 @@
-import { ArrowUpRight } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -11,52 +10,20 @@ import {
   Sector,
   ComposedChart,
 } from "recharts";
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  incomeData,
+  expensesData,
+  subsData,
+  donutData,
+} from "@/data/mock-data";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
+import { StatCard } from "../shared/StatCard";
 import { useState } from "react";
-
-const incomeData = [
-  { x: "1", v: 20 },
-  { x: "2", v: 24 },
-  { x: "4", v: 28 },
-  { x: "3", v: 18 },
-  { x: "5", v: 22 },
-  { x: "6", v: 30 },
-  { x: "7", v: 26 },
-  { x: "8", v: 34 },
-  { x: "9", v: 24 },
-];
-
-const expensesData = [
-  { x: "1", v: 12 },
-  { x: "2", v: 18 },
-  { x: "7", v: 21 },
-  { x: "8", v: 28 },
-  { x: "9", v: 24 },
-];
-
-const subsData = [
-  { x: "A", a: 18, b: 10 },
-  { x: "B", a: 14, b: 8 },
-  { x: "C", a: 22, b: 12 },
-  { x: "D", a: 10, b: 7 },
-  { x: "E", a: 26, b: 14 },
-  { x: "F", a: 16, b: 9 },
-  { x: "G", a: 20, b: 11 },
-];
-
-const donutData = [
-  { name: "Other", value: 17, key: "other" },
-  { name: "Education", value: 53, key: "edu" },
-  { name: "Entertainment", value: 18, key: "ent" },
-  { name: "Savings", value: 12, key: "sav" },
-];
 
 const incomeConfig = {
   v: { label: "Income", color: "hsl(var(--chart-1))" },
@@ -76,55 +43,7 @@ const donutConfig = {
   other: { label: "Other", color: "hsl(var(--chart-3))" },
 } satisfies ChartConfig;
 
-function StatCard({
-  title,
-  value,
-  unit,
-  children,
-}: {
-  title: string;
-  value: string;
-  unit?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Card className="rounded-2xl border-white/60 pb-0 pt-6 h-52 bg-white/70 overflow-hidden hover:scale-110 cursor-pointer">
-      <CardHeader className="pb-2 px-2">
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="text-lg font-semibold text-gray-500">
-              {title}
-            </CardTitle>
-            <div className="mt-1">
-              <div className="text-3xl font-black text-slate-900 leading-none">
-                {value}
-              </div>
-              {unit ? (
-                <div className="mt-1 text-sm font-semibold text-slate-300">
-                  {unit}
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          <div className="grid h-7 w-7 place-items-center rounded-md bg-white shadow-xl text-emerald-600">
-            <ArrowUpRight className="h-4 w-4" />
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className="pt-2 px-0 pb-0 z-100">
-        <div
-          className={`h-30 w-full ${title === "Graph" ? "-translate-y-10" : "-translate-y-14"}`}
-        >
-          {children}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-export function QuickSummaryCards() {
+export const QuickSummaryCards = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   return (
     <div className="grid md:grid-cols-2 grid-cols-1 lg:grid-cols-4 gap-3">
@@ -212,20 +131,25 @@ export function QuickSummaryCards() {
         <ChartContainer config={donutConfig} className="h-full w-full">
           <PieChart>
             <ChartTooltip
-              coordinate={{ x: 10, y: 10 }}
               cursor={false}
-              content={
-                <ChartTooltipContent
-                  formatter={(value, name) => (
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-xs font-semibold text-muted-foreground">
-                        {name}
-                      </span>
-                      <span className="text-sm font-bold">{value}%</span>
+              content={({ active, payload, coordinate }) => {
+                if (!active || !payload?.length || !coordinate) return null;
+
+                const item = payload[0];
+
+                return (
+                  <div className="pointer-events-none">
+                    <div className="bg-transparent shadow-none border-0 p-0 rounded-none">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs font-semibold text-muted-foreground">
+                          {item.name}
+                        </span>
+                        <span className="text-sm font-bold">{item.value}%</span>
+                      </div>
                     </div>
-                  )}
-                />
-              }
+                  </div>
+                );
+              }}
             />
 
             <Pie
@@ -261,4 +185,4 @@ export function QuickSummaryCards() {
       </StatCard>
     </div>
   );
-}
+};

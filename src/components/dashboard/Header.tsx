@@ -1,19 +1,12 @@
 import React, { useMemo } from "react";
-import type { User } from "../types";
+import type { User } from "../../types";
 import { ChevronsUpDown, Wallet, Menu } from "lucide-react";
+import { getGreeting } from "../utils/helper";
 
 interface HeaderProps {
   user: User;
   onOpenContacts?: () => void;
 }
-
-const getGreeting = () => {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12) return "Good Morning";
-  if (hour >= 12 && hour < 17) return "Good Afternoon";
-  if (hour >= 17 && hour < 22) return "Good Evening";
-  return "Good Night";
-};
 
 const Header: React.FC<HeaderProps> = ({ user, onOpenContacts }) => {
   const greeting = useMemo(getGreeting, []);

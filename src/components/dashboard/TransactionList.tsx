@@ -1,0 +1,403 @@
+import { useEffect, useMemo, useState } from "react";
+import type { Transaction } from "../../types";
+import {
+  ShoppingBag,
+  Instagram,
+  GraduationCap,
+  ArrowRight,
+  ArrowLeft,
+  ArrowDown,
+  ArrowUp,
+  TrendingDown,
+  TrendingUp,
+} from "lucide-react";
+import pakistan from "@/assets/pakistan.png";
+
+interface TransactionListProps {
+  transactions: Transaction[];
+}
+
+const PAGE_SIZE = 3;
+
+const TransactionIcon = ({ category }: { category: string }) => {
+  switch (category.toLowerCase()) {
+    case "shopping":
+      return <ShoppingBag size={20} className="text-white" />;
+    case "social":
+      return <Instagram size={20} className="text-white" />;
+    case "education":
+      return <GraduationCap size={20} className="text-white" />;
+    default:
+      return <ShoppingBag size={20} className="text-white" />;
+  }
+};
+
+const TransactionBg = (category: string) => {
+  switch (category.toLowerCase()) {
+    case "shopping":
+      return "bg-purple-900";
+    case "social":
+      return "bg-cyan-500";
+    case "education":
+      return "bg-orange-400";
+    default:
+      return "bg-gray-800";
+  }
+};
+
+const TransactionList = ({ transactions }: TransactionListProps) => {
+  const [page, setPage] = useState(0);
+
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(transactions.length / PAGE_SIZE));
+  }, [transactions.length]);
+
+  useEffect(() => {
+    setPage((p) => Math.min(Math.max(0, p), totalPages - 1));
+  }, [totalPages]);
+
+  const canPrev = page > 0;
+  const canNext = page < totalPages - 1;
+
+  const pageTransactions = useMemo(() => {
+    const start = page * PAGE_SIZE;
+    return transactions.slice(start, start + PAGE_SIZE);
+  }, [transactions, page]);
+
+  const handlePrev = () => {
+    if (!canPrev) return;
+    setPage((p) => p - 1);
+  };
+
+  const handleNext = () => {
+    if (!canNext) return;
+    setPage((p) => p + 1);
+  };
+
+  return (
+    <div className="w-full h-full flex flex-col">
+      <div className="flex flex-col mb-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-bold text-gray-800">All Transactions</h2>
+
+          <div className="space-x-4 flex items-center">
+            <button
+              type="button"
+              onClick={handlePrev}
+              disabled={!canPrev}
+              aria-label="Previous page"
+              className={`p-2 rounded-full transition ${
+                canPrev ? "hover:bg-white/50" : "opacity-40 cursor-not-allowed"
+              }`}
+            >
+              <ArrowLeft size={18} className="text-gray-600" />
+            </button>
+
+            <button
+              type="button"
+              onClick={handleNext}
+              disabled={!canNext}
+              aria-label="Next page"
+              className={`p-2 rounded-full transition ${
+                canNext ? "hover:bg-white/50" : "opacity-40 cursor-not-allowed"
+              }`}
+            >
+              <ArrowRight size={18} className="text-gray-600" />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-2 mt-4">
+          <p className="text-gray-400 font-bold text-lg">This Week Summary</p>
+
+          {transactions.length > PAGE_SIZE && (
+            <span className="text-xs font-bold text-gray-400">
+              {page + 1} / {totalPages}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex items-center flex-wrap justify-between gap-8 mb-3 rounded-2xl xl:hidden block">
+        <div className="flex flex-col">
+          <span className="text-[28px] flex items-center gap-1 font-bold text-gray-800">
+            <img src={pakistan} className="rounded-full w-8 h-8" alt="" />
+            113,650 <span className="text-gray-400 font-bold">PKR</span>
+          </span>
+        </div>
+
+        <div className="flex flex-col">
+          <div className="flex items-center text-green-600 text-md font-bold">
+            <ArrowUp size={20} className="mr-1" />
+            <span className="flex gap-1">
+              <span className="text-black">24,000</span>
+              <span className="text-gray-400 font-bold">PKR</span>
+            </span>
+          </div>
+        </div>
+
+        <div className="flex flex-col">
+          <div className="flex items-center text-red-500 text-md font-bold">
+            <ArrowDown size={20} className="mr-1" />
+            <span className="flex gap-1">
+              <span className="text-black">4,000</span>
+              <span className="text-gray-400 font-bold">PKR</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-3 rounded-2xl xl:block hidden">
+        <div className="overflow-x-auto no-scrollbar">
+          <table className="w-full min-w-130 table-fixed">
+            <tbody>
+              <tr>
+                <td className="w-[40%] align-middle p-0">
+                  <div className="flex items-center gap-2">
+                    <img
+                      src={pakistan}
+                      className="rounded-full w-8 h-8"
+                      alt=""
+                    />
+                    <span className="text-[28px] font-bold text-gray-800 whitespace-nowrap">
+                      113,650{" "}
+                      <span className="text-gray-400 font-bold">PKR</span>
+                    </span>
+                  </div>
+                </td>
+
+                <td className="w-[30%] align-middle text-right p-0">
+                  <div className="inline-flex items-center text-green-600 text-md font-bold whitespace-nowrap">
+                    <ArrowUp size={20} className="mr-1" />
+                    <span className="flex gap-1">
+                      <span className="text-black">24,000</span>
+                      <span className="text-gray-400 font-bold">PKR</span>
+                    </span>
+                  </div>
+                </td>
+
+                <td className="w-[30%] align-middle text-right p-0">
+                  <div className="inline-flex items-center text-red-500 text-md font-bold whitespace-nowrap">
+                    <ArrowDown size={20} className="mr-1" />
+                    <span className="flex gap-1">
+                      <span className="text-black">4,000</span>
+                      <span className="text-gray-400 font-bold">PKR</span>
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="grow overflow-y-auto pt-3 no-scrollbar xl:block hidden">
+        <div className="relative flex flex-col gap-3.5 grow overflow-y-auto pt-3 no-scrollbar">
+          <div className="overflow-x-auto no-scrollbar">
+            <table className="min-w-130 table-fixed border-separate border-spacing-y-3.5 w-[97%]">
+              <tbody>
+                {pageTransactions.map((t) => (
+                  <tr key={t.id} className="group relative">
+                    <td colSpan={3} className="p-0">
+                      <div className="relative">
+                        <div
+                          className="
+                        pointer-events-none absolute inset-0 rounded-md bg-[#dad6ee]
+                        border-2 border-dashed border-gray-400
+                        opacity-0 transition-opacity duration-200
+                        group-hover:opacity-100
+                      "
+                        />
+
+                        <div
+                          className="
+                        relative z-20
+                        rounded-md
+                        bg-transparent
+                        border border-transparent
+                        transition-all duration-200 ease-out
+                        group-hover:border-white group-hover:bg-white
+                        group-hover:cursor-pointer hover:shadow-xl
+                        lg:group-hover:-translate-y-4 lg:group-hover:translate-x-4
+                      "
+                        >
+                          <table className="w-full table-fixed">
+                            <tbody>
+                              <tr>
+                                <td className="w-[40%] p-3 lg:p-4 align-middle">
+                                  <div className="flex items-center gap-3 lg:gap-4 min-w-0">
+                                    <div
+                                      className={`w-10 h-10 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center shadow-md ${TransactionBg(
+                                        t.category,
+                                      )}`}
+                                    >
+                                      <TransactionIcon category={t.category} />
+                                    </div>
+
+                                    <div className="min-w-0">
+                                      <h4 className="font-bold text-gray-800 truncate">
+                                        {t.title}
+                                      </h4>
+                                      <p className="text-xs text-slate-400 truncate">
+                                        {t.category === "social"
+                                          ? "Content Creator Earning"
+                                          : t.category === "shopping"
+                                            ? "Departmental Store"
+                                            : "Personal Expenses"}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </td>
+
+                                <td className="w-[30%] p-3 lg:p-4 align-middle text-right">
+                                  <span className="font-bold text-gray-800 whitespace-nowrap">
+                                    {t.type === "expense" ? "" : "+"}
+                                    {t.amount.toLocaleString()}{" "}
+                                    <span className="text-gray-400">
+                                      {t.currency}
+                                    </span>
+                                  </span>
+                                </td>
+
+                                <td className="w-[30%] p-3 lg:p-4 align-middle text-right">
+                                  <div
+                                    className={`ml-auto w-14 h-9 lg:w-16 lg:h-10 rounded-full p-1 cursor-pointer transition-colors duration-300 ${
+                                      t.status ? "bg-[#52459D]" : "bg-gray-300"
+                                    }`}
+                                  >
+                                    <div
+                                      className={`bg-white w-7 h-7 lg:w-8 lg:h-8 rounded-full flex justify-center items-center shadow-md transform transition-transform duration-300 ${
+                                        t.type === "income"
+                                          ? "translate-x-5 lg:translate-x-6"
+                                          : "translate-x-0"
+                                      }`}
+                                    >
+                                      {t.type === "income" ? (
+                                        <TrendingUp
+                                          size={18}
+                                          className="text-green-600"
+                                        />
+                                      ) : (
+                                        <TrendingDown
+                                          size={18}
+                                          className="text-red-600"
+                                        />
+                                      )}
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {transactions.length === 0 && (
+            <div className="text-sm font-bold text-gray-400 py-6">
+              No transactions yet.
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3.5 grow overflow-y-auto pt-3 no-scrollbar xl:hidden block">
+        {pageTransactions.map((t) => (
+          <div key={t.id} className="relative group">
+            <div
+              className="
+                pointer-events-none absolute inset-0 rounded-md bg-[#dad6ee]
+                border-2 border-dashed border-gray-400
+                opacity-0 transition-opacity duration-200
+                w-[97%]
+                group-hover:opacity-100
+              "
+            />
+
+            <div
+              className="
+                relative z-20
+                flex flex-col lg:flex-row lg:items-center lg:justify-between
+                gap-3 lg:gap-6
+                p-3 lg:p-4 rounded-md
+                w-[97%]
+                bg-transparent
+                border border-transparent
+                transition-all duration-200 ease-out
+                hover:border-white hover:bg-white hover:cursor-pointer
+                lg:hover:-translate-y-4 lg:hover:translate-x-4
+              "
+            >
+              {/* Left */}
+              <div className="flex items-center gap-3 lg:gap-4 min-w-0">
+                <div
+                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center shadow-md ${TransactionBg(
+                    t.category,
+                  )}`}
+                >
+                  <TransactionIcon category={t.category} />
+                </div>
+
+                <div className="min-w-0">
+                  <h4 className="font-bold text-gray-800 truncate">
+                    {t.title}
+                  </h4>
+                  <p className="text-xs text-slate-400 truncate">
+                    {t.category === "social"
+                      ? "Content Creator Earning"
+                      : t.category === "shopping"
+                        ? "Departmental Store"
+                        : "Personal Expenses"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Right */}
+              <div className="flex items-center justify-between lg:justify-end gap-3 lg:gap-6">
+                <span className="font-bold text-gray-800 whitespace-nowrap">
+                  {t.type === "expense" ? "" : "+"}
+                  {t.amount.toLocaleString()}{" "}
+                  <span className="text-gray-400">{t.currency}</span>
+                </span>
+
+                <div
+                  className={`w-14 h-9 lg:w-16 lg:h-10 rounded-full p-1 cursor-pointer transition-colors duration-300 ${
+                    t.status ? "bg-[#52459D]" : "bg-gray-300"
+                  }`}
+                >
+                  <div
+                    className={`bg-white w-7 h-7 lg:w-8 lg:h-8 rounded-full flex justify-center items-center shadow-md transform transition-transform duration-300 ${
+                      t.type === "income"
+                        ? "translate-x-5 lg:translate-x-6"
+                        : "translate-x-0"
+                    }`}
+                  >
+                    {t.type === "income" ? (
+                      <TrendingUp size={18} className="text-green-600" />
+                    ) : (
+                      <TrendingDown size={18} className="text-red-600" />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Optional: empty state */}
+        {transactions.length === 0 && (
+          <div className="text-sm font-bold text-gray-400 py-6">
+            No transactions yet.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default TransactionList;

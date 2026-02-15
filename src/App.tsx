@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Dashboard from "./components/page/Dashboard";
 import bg from "@/assets/bg.png";
-import DashboardSkeleton from "./components/common/Loader";
+import DashboardSkeleton from "./components/dashboard/Loader";
 
 const MIN_LOADING_TIME = 4000;
 
@@ -12,7 +12,6 @@ function App() {
   useEffect(() => {
     let cancelled = false;
 
-    // Image preload
     const img = new Image();
     img.src = bg;
 

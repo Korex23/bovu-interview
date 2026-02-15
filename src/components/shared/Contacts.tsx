@@ -1,51 +1,15 @@
-import { useMemo, useState } from "react";
-import { Bell, MessageSquareText, Search, X, Menu } from "lucide-react";
+import { CONTACTS } from "@/data/mock-data";
+import { Bell, MessageSquareText, Search, X } from "lucide-react";
+import React from "react";
 
-type Contact = {
-  id: string;
-  name: string;
-  location: string;
-  avatar: string;
-};
-
-const CONTACTS: Contact[] = [
-  {
-    id: "1",
-    name: "Mike Taylor",
-    location: "Chicago, TX",
-    avatar: "https://i.pravatar.cc/80?img=47",
-  },
-  {
-    id: "2",
-    name: "Jack Green",
-    location: "Oakland, CO",
-    avatar: "https://i.pravatar.cc/80?img=12",
-  },
-  {
-    id: "3",
-    name: "Carmen Lewis",
-    location: "Milwaukee, CA",
-    avatar: "https://i.pravatar.cc/80?img=45",
-  },
-  {
-    id: "4",
-    name: "Micheal Richardson",
-    location: "Tampa, CA",
-    avatar: "https://i.pravatar.cc/80?img=56",
-  },
-  {
-    id: "5",
-    name: "Willie Cole",
-    location: "Seattle, WA",
-    avatar: "https://i.pravatar.cc/80?img=67",
-  },
-  {
-    id: "6",
-    name: "Phylis Weber",
-    location: "Tampa, NY",
-    avatar: "https://i.pravatar.cc/80?img=28",
-  },
-];
+interface PanelProps {
+  isSearchOpen: boolean;
+  setIsSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  query: string;
+  setQuery: React.Dispatch<React.SetStateAction<string>>;
+  filteredContacts: typeof CONTACTS;
+  onClose?: () => void;
+}
 
 const IconButton = ({
   children,
@@ -65,85 +29,14 @@ const IconButton = ({
   </button>
 );
 
-export default function ContactsPanel({
-  isMobileOpen,
-  setIsMobileOpen,
-}: {
-  isMobileOpen: boolean;
-  setIsMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [query, setQuery] = useState("");
-
-  const filteredContacts = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return CONTACTS;
-
-    return CONTACTS.filter((c) => {
-      const name = (c.name ?? "").toLowerCase();
-      const location = (c.location ?? "").toLowerCase();
-      return name.includes(q) || location.includes(q);
-    });
-  }, [query]);
-
-  return (
-    <>
-      <div
-        className={`xl:hidden fixed inset-0 z-[998] transition-opacity duration-200 ${
-          isMobileOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        }`}
-      >
-        <div
-          className="absolute inset-0 bg-black/30"
-          onClick={() => setIsMobileOpen(false)}
-        />
-
-        <div
-          className={`absolute right-0 top-0 h-full w-[90%] max-w-[420px] transition-transform duration-200 ${
-            isMobileOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-        >
-          <PanelContent
-            isSearchOpen={isSearchOpen}
-            setIsSearchOpen={setIsSearchOpen}
-            query={query}
-            setQuery={setQuery}
-            filteredContacts={filteredContacts}
-            onClose={() => setIsMobileOpen(false)}
-          />
-        </div>
-      </div>
-
-      <div className="hidden xl:block h-full min-h-0">
-        <PanelContent
-          isSearchOpen={isSearchOpen}
-          setIsSearchOpen={setIsSearchOpen}
-          query={query}
-          setQuery={setQuery}
-          filteredContacts={filteredContacts}
-        />
-      </div>
-    </>
-  );
-}
-
-function PanelContent({
+export function PanelContent({
   isSearchOpen,
   setIsSearchOpen,
   query,
   setQuery,
   filteredContacts,
   onClose,
-}: {
-  isSearchOpen: boolean;
-  setIsSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  query: string;
-  setQuery: React.Dispatch<React.SetStateAction<string>>;
-  filteredContacts: typeof CONTACTS;
-  onClose?: () => void;
-}) {
+}: PanelProps) {
   return (
     <aside className="bg-[#EFECFF] p-0 w-full h-full min-h-0 relative overflow-hidden flex flex-col">
       <svg

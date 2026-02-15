@@ -3,7 +3,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function DashboardSkeleton() {
   return (
     <section className="relative w-[85%] md:translate-x-7 h-[85vh]">
-      {/* Sidebar */}
       <div className="absolute -left-10 md:-left-10 top-1/2 -translate-y-1/2 z-20">
         <div className="w-18 h-110 rounded-full bg-[#52459D]/80 flex flex-col items-center justify-between py-6 px-3 shadow-xl">
           <div className="flex flex-col gap-4 items-center">
@@ -18,12 +17,9 @@ export default function DashboardSkeleton() {
         </div>
       </div>
 
-      {/* Main Card */}
       <div className="relative z-10 h-full rounded-[40px] bg-[#F5F3F8]/20 overflow-hidden">
         <div className="grid h-full xl:grid-cols-[1fr_320px] gap-6">
-          {/* Left content */}
           <div className="grid h-full min-h-0 xl:grid-rows-[auto_1fr] p-4 md:pl-20 pt-10 pb-5">
-            {/* Header */}
             <div className="flex items-center justify-between mb-8">
               <Skeleton className="h-6 md:w-48 w-32 rounded-md" />
 
@@ -99,7 +95,6 @@ export default function DashboardSkeleton() {
                   <Skeleton className="h-9 w-9 rounded-xl" />
                 </div>
 
-                {/* Contacts list */}
                 <div className="xl:block hidden px-5 flex-1 overflow-y-auto no-scrollbar">
                   <div className="mt-4 rounded-2xl py-2">
                     <div className="flex flex-col gap-3">
@@ -118,7 +113,6 @@ export default function DashboardSkeleton() {
                     </div>
                   </div>
 
-                  {/* Bottom reminder */}
                   <div className="mt-5 p-4">
                     <Skeleton className="h-8 w-8 rounded-md mb-3" />
                     <Skeleton className="h-4 w-48 rounded-md" />
