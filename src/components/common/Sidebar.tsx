@@ -94,9 +94,9 @@ const Sidebar: React.FC<SidebarProps> = ({ scrollContainerRef }) => {
             <button
               key={item.id}
               onClick={() => setActive(item.id)}
-              className={`p-3 rounded-full transition-all duration-300 relative focus:outline-none ${
+              className={`p-3 rounded-full hover:scale-110 transition-all duration-300 relative focus:outline-none ${
                 isActive
-                  ? "bg-[#423698] border-[#392e89] border-2 text-white shadow-lg"
+                  ? "bg-[#423698] border-[#392e89] border-3 scale-115 text-white shadow-lg"
                   : "text-white/70 hover:bg-white/10 hover:text-white"
               }`}
             >

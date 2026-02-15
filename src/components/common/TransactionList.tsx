@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import type { Transaction } from "../types";
 import {
   ShoppingBag,
@@ -16,6 +16,8 @@ import pakistan from "@/assets/pakistan.png";
 interface TransactionListProps {
   transactions: Transaction[];
 }
+
+const PAGE_SIZE = 3;
 
 const TransactionIcon = ({ category }: { category: string }) => {
   switch (category.toLowerCase()) {
@@ -44,24 +46,76 @@ const TransactionBg = (category: string) => {
 };
 
 const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
+  const [page, setPage] = useState(0);
+
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(transactions.length / PAGE_SIZE));
+  }, [transactions.length]);
+
+  useEffect(() => {
+    setPage((p) => Math.min(Math.max(0, p), totalPages - 1));
+  }, [totalPages]);
+
+  const canPrev = page > 0;
+  const canNext = page < totalPages - 1;
+
+  const pageTransactions = useMemo(() => {
+    const start = page * PAGE_SIZE;
+    return transactions.slice(start, start + PAGE_SIZE);
+  }, [transactions, page]);
+
+  const handlePrev = () => {
+    if (!canPrev) return;
+    setPage((p) => p - 1);
+  };
+
+  const handleNext = () => {
+    if (!canNext) return;
+    setPage((p) => p + 1);
+  };
+
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex flex-col mb-4">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-bold text-gray-800">All Transactions</h2>
-          <div className="space-x-4">
-            <button className="p-2 hover:bg-white/50 rounded-full transition">
+
+          <div className="space-x-4 flex items-center">
+            <button
+              type="button"
+              onClick={handlePrev}
+              disabled={!canPrev}
+              aria-label="Previous page"
+              className={`p-2 rounded-full transition ${
+                canPrev ? "hover:bg-white/50" : "opacity-40 cursor-not-allowed"
+              }`}
+            >
               <ArrowLeft size={18} className="text-gray-600" />
             </button>
-            <button className="p-2 hover:bg-white/50 rounded-full transition">
+
+            <button
+              type="button"
+              onClick={handleNext}
+              disabled={!canNext}
+              aria-label="Next page"
+              className={`p-2 rounded-full transition ${
+                canNext ? "hover:bg-white/50" : "opacity-40 cursor-not-allowed"
+              }`}
+            >
               <ArrowRight size={18} className="text-gray-600" />
             </button>
           </div>
         </div>
-        <div className="flex gap-2">
-          <p className="text-gray-400 font-bold text-lg mt-4">
-            This Week Summary
-          </p>
+
+        <div className="flex items-center justify-between gap-2 mt-4">
+          <p className="text-gray-400 font-bold text-lg">This Week Summary</p>
+
+          {/* Optional: tiny page indicator (helps UX in interviews) */}
+          {transactions.length > PAGE_SIZE && (
+            <span className="text-xs font-bold text-gray-400">
+              {page + 1} / {totalPages}
+            </span>
+          )}
         </div>
       </div>
 
@@ -72,6 +126,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
             113,650 <span className="text-gray-400 font-bold">PKR</span>
           </span>
         </div>
+
         <div className="flex flex-col">
           <div className="flex items-center text-green-600 text-md font-bold">
             <ArrowUp size={20} className="mr-1" />
@@ -81,6 +136,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
             </span>
           </div>
         </div>
+
         <div className="flex flex-col">
           <div className="flex items-center text-red-500 text-md font-bold">
             <ArrowDown size={20} className="mr-1" />
@@ -93,29 +149,31 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
       </div>
 
       <div className="flex flex-col gap-3.5 grow overflow-y-auto pt-3 no-scrollbar">
-        {transactions.map((t) => (
+        {pageTransactions.map((t) => (
           <div key={t.id} className="relative group">
             <div
               className="
-      pointer-events-none absolute inset-0 rounded-md bg-[#F0EDFE]
-      border-2 border-dashed border-gray-400
-      opacity-100 transition-opacity duration-200
-      group-hover:opacity-100
-    "
+                pointer-events-none absolute inset-0 rounded-md bg-[#dad6ee]
+                border-2 border-dashed border-gray-400
+                opacity-100 transition-opacity duration-200
+                w-[97%]
+                group-hover:opacity-100
+              "
             />
 
             <div
               className="
-      relative z-20
-      flex flex-col lg:flex-row lg:items-center lg:justify-between
-      gap-3 lg:gap-6
-      p-3 lg:p-4 rounded-md
-      bg-[#F5F3F8]
-      border border-transparent
-      transition-all duration-200 ease-out
-      hover:border-white hover:bg-white
-      lg:hover:-translate-y-3 lg:hover:translate-x-3
-    "
+                relative z-20
+                flex flex-col lg:flex-row lg:items-center lg:justify-between
+                gap-3 lg:gap-6
+                p-3 lg:p-4 rounded-md
+                w-[97%]
+                bg-[#F5F3F8]
+                border border-transparent
+                transition-all duration-200 ease-out
+                hover:border-white hover:bg-white hover:cursor-pointer
+                lg:hover:-translate-y-3 lg:hover:translate-x-3
+              "
             >
               {/* Left */}
               <div className="flex items-center gap-3 lg:gap-4 min-w-0">
@@ -172,6 +230,13 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
             </div>
           </div>
         ))}
+
+        {/* Optional: empty state */}
+        {transactions.length === 0 && (
+          <div className="text-sm font-bold text-gray-400 py-6">
+            No transactions yet.
+          </div>
+        )}
       </div>
     </div>
   );

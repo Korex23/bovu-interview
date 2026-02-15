@@ -65,10 +65,15 @@ const IconButton = ({
   </button>
 );
 
-export default function ContactsPanel() {
+export default function ContactsPanel({
+  isMobileOpen,
+  setIsMobileOpen,
+}: {
+  isMobileOpen: boolean;
+  setIsMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const filteredContacts = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -83,15 +88,6 @@ export default function ContactsPanel() {
 
   return (
     <>
-      <button
-        type="button"
-        aria-label="Open contacts"
-        onClick={() => setIsMobileOpen(true)}
-        className={`xl:hidden ${isMobileOpen && "hidden"} fixed sm:top-10 top-4 right-4 z-[999] grid h-11 w-11 place-items-center rounded-md bg-white/80 backdrop-blur border border-black/10 shadow-xl`}
-      >
-        <Menu className="text-gray-700" size={20} />
-      </button>
-
       <div
         className={`xl:hidden fixed inset-0 z-[998] transition-opacity duration-200 ${
           isMobileOpen
@@ -100,12 +96,12 @@ export default function ContactsPanel() {
         }`}
       >
         <div
-          className="absolute inset-0 bg-black/30 rounded-[40px]"
+          className="absolute inset-0 bg-black/30"
           onClick={() => setIsMobileOpen(false)}
         />
 
         <div
-          className={`absolute right-0 top-0 h-full rounded-[40px] w-[90%] max-w-[420px] transition-transform duration-200 ${
+          className={`absolute right-0 top-0 h-full w-[90%] max-w-[420px] transition-transform duration-200 ${
             isMobileOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
@@ -120,7 +116,6 @@ export default function ContactsPanel() {
         </div>
       </div>
 
-      {/* Desktop panel (xl and above only) */}
       <div className="hidden xl:block h-full min-h-0">
         <PanelContent
           isSearchOpen={isSearchOpen}
@@ -151,7 +146,6 @@ function PanelContent({
 }) {
   return (
     <aside className="bg-[#EFECFF] p-0 w-full h-full min-h-0 relative overflow-hidden flex flex-col">
-      {/* Background SVG (remove `fixed` — it breaks positioning inside panel) */}
       <svg
         width="213"
         height="183"
@@ -170,10 +164,8 @@ function PanelContent({
         />
       </svg>
 
-      {/* Sticky top actions */}
       <div className="sticky top-0 z-20 bg-[#EFECFF] px-5 pt-5 pb-4">
         <div className="flex items-center justify-end gap-3">
-          {/* optional mobile close button */}
           {onClose && (
             <button
               type="button"
@@ -206,7 +198,6 @@ function PanelContent({
         </div>
       </div>
 
-      {/* Title row + search toggle */}
       <div className="mt-4 flex items-start justify-between gap-3 px-5 pb-2">
         <div>
           <h2 className="text-[22px] font-extrabold tracking-tight text-[#20223A]">
@@ -237,7 +228,6 @@ function PanelContent({
         </button>
       </div>
 
-      {/* Search bar (appears under title row) */}
       {isSearchOpen && (
         <div className="px-5 pb-3">
           <div className="flex items-center gap-2 rounded-xl border border-white/60 bg-white/70 px-3 py-2 backdrop-blur">
@@ -262,9 +252,7 @@ function PanelContent({
         </div>
       )}
 
-      {/* Scrollable content */}
       <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar px-5 pb-5 relative z-10">
-        {/* List card */}
         <div className="mt-4 rounded-2xl py-2 backdrop-blur">
           <ul>
             {filteredContacts.length === 0 ? (
@@ -276,7 +264,7 @@ function PanelContent({
                 <li key={c.id}>
                   <button
                     type="button"
-                    className="flex w-full items-center gap-3 rounded-xl px-2 py-3 text-left hover:bg-white/30"
+                    className="flex w-full items-center gap-3 rounded-xl px-2 py-3 text-left hover:bg-white/30 hover:scale-110"
                   >
                     <img
                       src={c.avatar}
@@ -298,7 +286,6 @@ function PanelContent({
           </ul>
         </div>
 
-        {/* Bottom reminder */}
         <div className="mt-5 flex flex-col gap-3 p-4">
           <div className="relative">
             <Bell size={30} color="#5E406C" />

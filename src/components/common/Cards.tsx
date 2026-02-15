@@ -6,7 +6,7 @@ const Cards = () => {
   return (
     <>
       <div className="flex flex-col justify-center items-center gap-3">
-        <div>
+        <div className="hover:scale-110 cursor-pointer hover:translate-x-3">
           <div className="relative">
             <div className="absolute text-white text-base top-10 left-3">
               <div className="flex flex-col justify-between">
@@ -29,7 +29,7 @@ const Cards = () => {
             <img src={wavy} className="w-50 h-32" />
           </div>
         </div>
-        <div>
+        <div className="hover:scale-110 cursor-pointer hover:translate-x-3">
           <div className="relative">
             <div className="absolute text-white text-base top-10 left-3">
               <div className="flex flex-col justify-between">

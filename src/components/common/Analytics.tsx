@@ -88,7 +88,7 @@ function StatCard({
   children: React.ReactNode;
 }) {
   return (
-    <Card className="rounded-2xl border-white/60 pb-0 pt-6 h-52 bg-white/70 overflow-hidden">
+    <Card className="rounded-2xl border-white/60 pb-0 pt-6 h-52 bg-white/70 overflow-hidden hover:scale-110 cursor-pointer">
       <CardHeader className="pb-2 px-2">
         <div className="flex items-start justify-between">
           <div>
