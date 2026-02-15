@@ -1,4 +1,3 @@
-import React from "react";
 import angle from "@/assets/angle.png";
 import wavy from "@/assets/wavy.png";
 import CreateCard from "./CreateCard";
