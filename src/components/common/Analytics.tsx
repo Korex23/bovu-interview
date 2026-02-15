@@ -92,7 +92,7 @@ function StatCard({
       <CardHeader className="pb-2 px-2">
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle className="text-md font-semibold text-slate-600">
+            <CardTitle className="text-lg font-semibold text-gray-500">
               {title}
             </CardTitle>
             <div className="mt-1">
@@ -114,7 +114,11 @@ function StatCard({
       </CardHeader>
 
       <CardContent className="pt-2 px-0 pb-0 z-100">
-        <div className="-translate-y-10 h-30 w-full">{children}</div>
+        <div
+          className={`h-30 w-full ${title === "Graph" ? "-translate-y-10" : "-translate-y-14"}`}
+        >
+          {children}
+        </div>
       </CardContent>
     </Card>
   );
@@ -123,7 +127,7 @@ function StatCard({
 export function QuickSummaryCards() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   return (
-    <div className="grid grid-cols-4 gap-6">
+    <div className="grid md:grid-cols-2 grid-cols-1 lg:grid-cols-4 gap-3">
       <StatCard title="Income" value="1.34m" unit="PKR">
         <ChartContainer config={incomeConfig} className="h-full w-full">
           <AreaChart
@@ -208,6 +212,7 @@ export function QuickSummaryCards() {
         <ChartContainer config={donutConfig} className="h-full w-full">
           <PieChart>
             <ChartTooltip
+              coordinate={{ x: 10, y: 10 }}
               cursor={false}
               content={
                 <ChartTooltipContent

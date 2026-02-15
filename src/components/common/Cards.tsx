@@ -6,7 +6,7 @@ import CreateCard from "./CreateCard";
 const Cards = () => {
   return (
     <>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col justify-center items-center gap-3">
         <div>
           <div className="relative">
             <div className="absolute text-white text-base top-10 left-3">

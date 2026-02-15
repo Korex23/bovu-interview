@@ -1,4 +1,5 @@
-import React from "react";
+import { useMemo, useState } from "react";
+import { Bell, MessageSquareText, Search, X, Menu } from "lucide-react";
 
 type Contact = {
   id: string;
@@ -65,14 +66,98 @@ const IconButton = ({
 );
 
 export default function ContactsPanel() {
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  const filteredContacts = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return CONTACTS;
+
+    return CONTACTS.filter((c) => {
+      const name = (c.name ?? "").toLowerCase();
+      const location = (c.location ?? "").toLowerCase();
+      return name.includes(q) || location.includes(q);
+    });
+  }, [query]);
+
   return (
-    <aside className="bg-[#EFECFF] p-5 w-full relative z-10">
+    <>
+      <button
+        type="button"
+        aria-label="Open contacts"
+        onClick={() => setIsMobileOpen(true)}
+        className={`xl:hidden ${isMobileOpen && "hidden"} fixed sm:top-10 top-4 right-4 z-[999] grid h-11 w-11 place-items-center rounded-md bg-white/80 backdrop-blur border border-black/10 shadow-xl`}
+      >
+        <Menu className="text-gray-700" size={20} />
+      </button>
+
+      <div
+        className={`xl:hidden fixed inset-0 z-[998] transition-opacity duration-200 ${
+          isMobileOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div
+          className="absolute inset-0 bg-black/30 rounded-[40px]"
+          onClick={() => setIsMobileOpen(false)}
+        />
+
+        <div
+          className={`absolute right-0 top-0 h-full rounded-[40px] w-[90%] max-w-[420px] transition-transform duration-200 ${
+            isMobileOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          <PanelContent
+            isSearchOpen={isSearchOpen}
+            setIsSearchOpen={setIsSearchOpen}
+            query={query}
+            setQuery={setQuery}
+            filteredContacts={filteredContacts}
+            onClose={() => setIsMobileOpen(false)}
+          />
+        </div>
+      </div>
+
+      {/* Desktop panel (xl and above only) */}
+      <div className="hidden xl:block h-full min-h-0">
+        <PanelContent
+          isSearchOpen={isSearchOpen}
+          setIsSearchOpen={setIsSearchOpen}
+          query={query}
+          setQuery={setQuery}
+          filteredContacts={filteredContacts}
+        />
+      </div>
+    </>
+  );
+}
+
+function PanelContent({
+  isSearchOpen,
+  setIsSearchOpen,
+  query,
+  setQuery,
+  filteredContacts,
+  onClose,
+}: {
+  isSearchOpen: boolean;
+  setIsSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  query: string;
+  setQuery: React.Dispatch<React.SetStateAction<string>>;
+  filteredContacts: typeof CONTACTS;
+  onClose?: () => void;
+}) {
+  return (
+    <aside className="bg-[#EFECFF] p-0 w-full h-full min-h-0 relative overflow-hidden flex flex-col">
+      {/* Background SVG (remove `fixed` — it breaks positioning inside panel) */}
       <svg
         width="213"
         height="183"
         viewBox="0 0 213 183"
         fill="none"
-        className="absolute bottom-0 right-0 z-1"
+        className="absolute bottom-0 right-0 pointer-events-none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
@@ -84,45 +169,45 @@ export default function ContactsPanel() {
           stroke="#DFDBF490"
         />
       </svg>
-      <div className="flex items-center justify-end gap-3">
-        <IconButton>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M7 9h10M7 13h6M21 12c0 4.418-4.03 8-9 8-1.03 0-2.02-.154-2.94-.44L3 21l1.44-4.06C3.54 15.02 3 13.56 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z"
-              stroke="#3B3E53"
-              strokeWidth="1.7"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </IconButton>
 
-        <IconButton dot>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M15 17H9m10-2V11a7 7 0 10-14 0v4l-2 2h18l-2-2Z"
-              stroke="#3B3E53"
-              strokeWidth="1.7"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </IconButton>
+      {/* Sticky top actions */}
+      <div className="sticky top-0 z-20 bg-[#EFECFF] px-5 pt-5 pb-4">
+        <div className="flex items-center justify-end gap-3">
+          {/* optional mobile close button */}
+          {onClose && (
+            <button
+              type="button"
+              aria-label="Close contacts"
+              onClick={onClose}
+              className="mr-auto grid h-9 w-9 place-items-center rounded-xl border border-white/60 bg-white/60 backdrop-blur"
+            >
+              <X size={16} className="text-gray-600" />
+            </button>
+          )}
 
-        <button
-          className="h-9 w-9 overflow-hidden rounded-md border border-white/60 bg-white/70 shadow-[0_10px_25px_rgba(32,34,58,0.08)] backdrop-blur"
-          type="button"
-        >
-          <img
-            src="https://i.pravatar.cc/80?img=68"
-            alt="profile"
-            className="h-full w-full object-cover"
-          />
-        </button>
+          <IconButton>
+            <MessageSquareText className="text-gray-500" size={16} />
+          </IconButton>
+
+          <IconButton dot>
+            <Bell className="text-gray-500" size={16} />
+          </IconButton>
+
+          <button
+            className="h-9 w-9 overflow-hidden rounded-md border border-white/60 bg-white/70 shadow-[0_10px_25px_rgba(32,34,58,0.08)] backdrop-blur"
+            type="button"
+          >
+            <img
+              src="https://i.pravatar.cc/80?img=68"
+              alt="profile"
+              className="h-full w-full object-cover"
+            />
+          </button>
+        </div>
       </div>
 
-      {/* Title row */}
-      <div className="mt-4 flex items-start justify-between gap-3">
+      {/* Title row + search toggle */}
+      <div className="mt-4 flex items-start justify-between gap-3 px-5 pb-2">
         <div>
           <h2 className="text-[22px] font-extrabold tracking-tight text-[#20223A]">
             Contacts
@@ -135,92 +220,120 @@ export default function ContactsPanel() {
         <button
           className="mt-1 grid h-9 w-9 place-items-center rounded-xl border border-white/60 bg-white/60 backdrop-blur"
           type="button"
-          aria-label="Search"
+          aria-label={isSearchOpen ? "Close search" : "Open search"}
+          onClick={() => {
+            setIsSearchOpen((v) => {
+              const next = !v;
+              if (!next) setQuery("");
+              return next;
+            });
+          }}
         >
-          {/* search */}
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M21 21l-4.3-4.3m1.3-5.2a7 7 0 11-14 0 7 7 0 0114 0Z"
-              stroke="#5B5F78"
-              strokeWidth="1.7"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          {isSearchOpen ? (
+            <X size={16} className="text-gray-500" />
+          ) : (
+            <Search size={16} className="text-gray-500" />
+          )}
         </button>
       </div>
 
-      {/* List card */}
-      <div className="mt-4 rounded-2xl py-2 backdrop-blur">
-        <ul>
-          {CONTACTS.map((c) => (
-            <li key={c.id}>
+      {/* Search bar (appears under title row) */}
+      {isSearchOpen && (
+        <div className="px-5 pb-3">
+          <div className="flex items-center gap-2 rounded-xl border border-white/60 bg-white/70 px-3 py-2 backdrop-blur">
+            <Search size={16} className="text-gray-500" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search contacts..."
+              className="w-full bg-transparent text-sm font-semibold text-[#20223A] placeholder:text-gray-400 focus:outline-none"
+            />
+            {query && (
               <button
                 type="button"
-                className="flex w-full items-center gap-3 rounded-xl px-2 py-3 text-left hover:bg-white/30"
+                onClick={() => setQuery("")}
+                className="grid h-7 w-7 place-items-center rounded-xl hover:bg-black/5"
+                aria-label="Clear"
               >
-                <img
-                  src={c.avatar}
-                  alt={c.name}
-                  className="h-12 w-12 rounded-md object-cover"
-                />
-                <div className="min-w-0">
-                  <div className="truncate text-[14px] font-extrabold text-[#2A2D46]">
-                    {c.name}
-                  </div>
-                  <div className="mt-1 text-[11px] font-bold text-[#8086A6]">
-                    {c.location}
-                  </div>
-                </div>
+                <X size={14} className="text-gray-500" />
               </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+            )}
+          </div>
+        </div>
+      )}
 
-      <div className="mt-5 flex flex-col gap-3 p-4 z-100">
-        <div className="relative grid h-10 w-10 place-items-center">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M15 17H9m10-2V11a7 7 0 10-14 0v4l-2 2h18l-2-2Z"
-              stroke="#6A55F5"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span className="absolute bottom-2.5 left-3 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white/90" />
+      {/* Scrollable content */}
+      <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar px-5 pb-5 relative z-10">
+        {/* List card */}
+        <div className="mt-4 rounded-2xl py-2 backdrop-blur">
+          <ul>
+            {filteredContacts.length === 0 ? (
+              <li className="px-3 py-6 text-sm font-semibold text-[#6F7697]">
+                No contacts found.
+              </li>
+            ) : (
+              filteredContacts.map((c) => (
+                <li key={c.id}>
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-3 rounded-xl px-2 py-3 text-left hover:bg-white/30"
+                  >
+                    <img
+                      src={c.avatar}
+                      alt={c.name}
+                      className="h-12 w-12 rounded-md object-cover"
+                    />
+                    <div className="min-w-0">
+                      <div className="truncate text-[14px] font-extrabold text-[#2A2D46]">
+                        {c.name}
+                      </div>
+                      <div className="mt-1 text-[11px] font-bold text-[#8086A6]">
+                        {c.location}
+                      </div>
+                    </div>
+                  </button>
+                </li>
+              ))
+            )}
+          </ul>
         </div>
 
-        <div className="flex items-end z-10">
-          <div className="flex-1">
-            <div className="text-[13px] font-extrabold text-[#2A2D46]">
-              It&apos;s Your Wife&apos;s Birthday
-            </div>
-            <div className="mt-1 text-[12px] font-bold text-[#6F7697]">
-              after 2 days
-            </div>
-            <div className="mt-1 text-[12px] font-extrabold text-[#2A2D46]">
-              Let&apos;s Plan for a big gift!
-            </div>
+        {/* Bottom reminder */}
+        <div className="mt-5 flex flex-col gap-3 p-4">
+          <div className="relative">
+            <Bell size={30} color="#5E406C" />
           </div>
 
-          <div className="rounded-full p-2 bg-[#52459D63]">
-            <button
-              type="button"
-              className="grid h-10 w-10 place-items-center z-10 rounded-full bg-[#52459D]"
-              aria-label="Go"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M5 12h12m0 0-5-5m5 5-5 5"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
+          <div className="flex items-end">
+            <div className="flex-1">
+              <div className="text-md font-extrabold text-[#2A2D46]">
+                It&apos;s Your Wife&apos;s Birthday
+              </div>
+              <div className="mt-1 text-base font-bold text-[#6F7697]">
+                after 2 days
+              </div>
+              <div className="mt-1 text-md font-extrabold text-[#2A2D46]">
+                Let&apos;s Plan for a big gift!
+              </div>
+            </div>
+
+            <div className="rounded-full p-2 bg-[#52459D63]">
+              <button
+                type="button"
+                className="grid h-10 w-10 place-items-center rounded-full bg-[#52459D]"
+                aria-label="Go"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M5 12h12m0 0-5-5m5 5-5 5"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>

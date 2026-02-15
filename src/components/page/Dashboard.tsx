@@ -1,4 +1,4 @@
-import React from "react";
+import { useRef } from "react";
 import Sidebar from "../common/Sidebar";
 import ContactsPanel from "../common/ContactsPanel";
 import Header from "../common/Header";
@@ -49,30 +49,36 @@ const user: User = {
 };
 
 const Dashboard = () => {
+  const scrollRef = useRef<HTMLElement | null>(null);
   return (
     <>
-      <section className="w-[80%] translate-x-7 h-[85vh] relative">
-        <div className="absolute -left-14 top-1/2 -translate-y-1/2 z-100">
-          <Sidebar />
+      <section className="w-[85%] md:translate-x-7 h-[85vh] relative">
+        <div className="absolute -left-10 md:-left-14 top-1/2 -translate-y-1/2 z-100">
+          <Sidebar scrollContainerRef={scrollRef} />
         </div>
 
         <div className="h-full rounded-[40px] bg-[#F5F3F8] overflow-hidden">
-          <div className="grid h-full grid-cols-[1fr_320px] gap-6">
-            <div className="grid h-full min-h-0 grid-rows-[auto_1fr] pl-20 pt-10 pb-5">
+          <div className="grid h-full xl:grid-cols-[1fr_320px] gap-6">
+            <div className="grid h-full min-h-0 xl:grid-rows-[auto_1fr] p-4 md:pl-20 pt-10 pb-5">
               <Header user={user} />
 
-              <main className="min-h-0 overflow-y-auto pr-4 no-scrollbar">
-                <section className="mb-7 flex gap-14">
+              <main
+                ref={(el) => {
+                  scrollRef.current = el;
+                }}
+                className="min-h-0 overflow-y-auto pr-0 md:pr-4 no-scrollbar"
+              >
+                <section className="mb-7 flex flex-col md:flex-row gap-14">
                   <Cards />
                   <TransactionList transactions={transactions} />
                 </section>
 
                 <section>
                   <div className="flex justify-between">
-                    <h2 className="font-bold text-xl mb-5">
+                    <h2 className="font-bold text-sm md:text-xl mb-5">
                       Quick Summary On Your Account
                     </h2>
-                    <span className="text-xl font-bold text-gray-400">
+                    <span className="text-sm md:text-xl font-bold text-gray-400">
                       View All
                     </span>
                   </div>
@@ -82,7 +88,7 @@ const Dashboard = () => {
             </div>
 
             <aside className="h-full min-h-0">
-              <div className="h-full overflow-y-auto flex items-stretch no-scrollbar">
+              <div className="h-full overflow-y-auto xl:translate-x-1.5 flex no-scrollbar">
                 <ContactsPanel />
               </div>
             </aside>

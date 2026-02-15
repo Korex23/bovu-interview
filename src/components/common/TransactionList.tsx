@@ -59,13 +59,13 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
           </div>
         </div>
         <div className="flex gap-2">
-          <p className="text-gray-400 font-bold text-sm mt-4">
+          <p className="text-gray-400 font-bold text-lg mt-4">
             This Week Summary
           </p>
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-8 mb-3 rounded-2xl">
+      <div className="flex items-center flex-wrap justify-between gap-8 mb-3 rounded-2xl">
         <div className="flex flex-col">
           <span className="text-[28px] flex items-center gap-1 font-bold text-gray-800">
             <img src={pakistan} className="rounded-full w-8 h-8" alt="" />
@@ -94,39 +94,44 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
 
       <div className="flex flex-col gap-3.5 grow overflow-y-auto pt-3 no-scrollbar">
         {transactions.map((t) => (
-          <div key={t.id} className="relative">
+          <div key={t.id} className="relative group">
             <div
               className="
-        pointer-events-none absolute inset-0 rounded-md bg-[#F0EDFE]
-        border-2 border-dashed border-gray-400
-        opacity-100 transition-opacity duration-200
-        group-hover:opacity-100
-      "
+      pointer-events-none absolute inset-0 rounded-md bg-[#F0EDFE]
+      border-2 border-dashed border-gray-400
+      opacity-100 transition-opacity duration-200
+      group-hover:opacity-100
+    "
             />
 
             <div
               className="
-        group relative z-20
-        flex items-center justify-between p-3 rounded-md
-        bg-[#F5F3F8]
-        border border-transparent
-        transition-all duration-200 ease-out
-        hover:border-white hover:bg-white
-        hover:-translate-y-3 hover:translate-x-3
-      "
+      relative z-20
+      flex flex-col lg:flex-row lg:items-center lg:justify-between
+      gap-3 lg:gap-6
+      p-3 lg:p-4 rounded-md
+      bg-[#F5F3F8]
+      border border-transparent
+      transition-all duration-200 ease-out
+      hover:border-white hover:bg-white
+      lg:hover:-translate-y-3 lg:hover:translate-x-3
+    "
             >
-              <div className="flex items-center gap-4">
+              {/* Left */}
+              <div className="flex items-center gap-3 lg:gap-4 min-w-0">
                 <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-md ${TransactionBg(
+                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center shadow-md ${TransactionBg(
                     t.category,
                   )}`}
                 >
                   <TransactionIcon category={t.category} />
                 </div>
 
-                <div>
-                  <h4 className="font-bold text-gray-800">{t.title}</h4>
-                  <p className="text-xs text-slate-400">
+                <div className="min-w-0">
+                  <h4 className="font-bold text-gray-800 truncate">
+                    {t.title}
+                  </h4>
+                  <p className="text-xs text-slate-400 truncate">
                     {t.category === "social"
                       ? "Content Creator Earning"
                       : t.category === "shopping"
@@ -136,27 +141,30 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-6">
-                <span className="font-bold text-gray-800">
+              {/* Right */}
+              <div className="flex items-center justify-between lg:justify-end gap-3 lg:gap-6">
+                <span className="font-bold text-gray-800 whitespace-nowrap">
                   {t.type === "expense" ? "" : "+"}
                   {t.amount.toLocaleString()}{" "}
                   <span className="text-gray-400">{t.currency}</span>
                 </span>
 
                 <div
-                  className={`w-16 h-10 rounded-full p-1 cursor-pointer transition-colors duration-300 ${
+                  className={`w-14 h-9 lg:w-16 lg:h-10 rounded-full p-1 cursor-pointer transition-colors duration-300 ${
                     t.status ? "bg-[#52459D]" : "bg-gray-300"
                   }`}
                 >
                   <div
-                    className={`bg-white w-8 h-8 rounded-full flex justify-center items-center shadow-md transform transition-transform duration-300 ${
-                      t.type === "income" ? "translate-x-6" : "translate-x-0"
+                    className={`bg-white w-7 h-7 lg:w-8 lg:h-8 rounded-full flex justify-center items-center shadow-md transform transition-transform duration-300 ${
+                      t.type === "income"
+                        ? "translate-x-5 lg:translate-x-6"
+                        : "translate-x-0"
                     }`}
                   >
                     {t.type === "income" ? (
-                      <TrendingUp size={20} color="green" />
+                      <TrendingUp size={18} className="text-green-600" />
                     ) : (
-                      <TrendingDown size={20} color="red" />
+                      <TrendingDown size={18} className="text-red-600" />
                     )}
                   </div>
                 </div>
